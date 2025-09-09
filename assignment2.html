@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bus Booking System — Demo</title>
+  <style>   
+    :root{
+      --accent:#DA9816;
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --danger:#d9534f;
+      --success:#2b9348;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:32px 16px;
+    }
+
+    .wrapper{
+      max-width:980px;
+      margin:18px auto;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow: 0 10px 30px rgba(12,17,31,0.08);
+      border:1px solid rgba(12,17,31,0.06);
+      display:flex;
+      flex-direction:row;
+      min-height:520px;
+    }
+
+    /* left: form, right: image/summary */
+    .left, .right{
+      padding:24px;
+    }
+    .left{
+      flex:1.1;
+    }
+    .right{
+      flex:.9;
+      background:linear-gradient(180deg, rgba(218,152,22,0.06), rgba(218,152,22,0.02));
+      border-left:1px dashed rgba(12,17,31,0.04);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      gap:14px;
+    }
+
+    header.topbar{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:8px;
+    }
+    .logo{
+      width:48px;height:48px;border-radius:50%;overflow:hidden;border:2px solid rgba(0,0,0,0.06);
+      display:inline-flex;align-items:center;justify-content:center;background:#fff;
+    }
+    .logo img{width:100%;height:100%;object-fit:cover;display:block}
+    .brand{
+      font-weight:700;color:var(--accent);font-size:18px;
+    }
+
+    h1{
+      margin:8px 0 18px 0;font-size:20px;
+    }
+    p.lead{margin:0;color:var(--muted);font-size:14px}
+
+    form .grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+    .full{grid-column:1/3}
+    label{
+      display:block;font-size:13px;margin-bottom:6px;color:#0f172a;
+      font-weight:600;
+    }
+    input[type="text"], input[type="password"], input[type="email"], input[type="tel"], select, input[type="date"], input[type="time"], input[type="number"]{
+      width:100%;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid rgba(12,17,31,0.08);
+      background:#fff;
+      outline:none;
+      font-size:14px;
+    }
+    input:focus, select:focus{
+      box-shadow:0 0 0 4px rgba(218,152,22,0.08);
+      border-color:var(--accent);
+    }
+
+    .actions{display:flex;gap:10px;align-items:center;margin-top:12px}
+    button.primary{
+      background:var(--accent);color:white;border:none;padding:10px 14px;border-radius:8px;font-weight:700;cursor:pointer;
+      box-shadow:0 6px 18px rgba(218,152,22,0.18);
+    }
+    button.ghost{
+      background:transparent;border:1px solid rgba(12,17,31,0.06);padding:10px 12px;border-radius:8px;cursor:pointer;
+    }
+
+    .summary{
+      width:100%;
+      max-width:320px;
+      background:linear-gradient(180deg,#fff,#fff);
+      border-radius:10px;padding:14px;border:1px solid rgba(12,17,31,0.06);
+      box-shadow: 0 8px 20px rgba(12,17,31,0.04);
+    }
+    .summary h3{margin:0 0 8px 0;font-size:16px}
+    .summary .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(12,17,31,0.03);font-size:14px;}
+    .summary .row:last-child{border-bottom:none}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:999}
+    .modal{background:#fff;padding:18px;border-radius:12px;max-width:720px;width:94%;box-shadow:0 20px 60px rgba(2,6,23,0.3)}
+    .modal h2{margin-top:0}
+    .modal pre{white-space:pre-wrap;background:#f7fafc;padding:8px;border-radius:6px;border:1px solid rgba(12,17,31,0.03)}
+    .close{background:transparent;border:0;font-weight:700;font-size:16px;cursor:pointer}
+
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+
+    /* responsive */
+    @media (max-width:860px){
+      .card{flex-direction:column}
+      .right{order:2;border-left:none;border-top:1px dashed rgba(12,17,31,0.04)}
+      .left{order:1}
+      .grid{grid-template-columns:1fr}
+      .full{grid-column:1}
+    }
+
+    /* small helper */
+    .error{color:var(--danger);font-size:13px;margin-top:6px}
+    .success{color:var(--success);font-size:13px;margin-top:6px}
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card" role="application" aria-labelledby="app-title">
+      <div class="left" aria-live="polite">
+        <div class="topbar">
+          <div class="logo" aria-hidden="true">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlE3wQ7s2D2Rw8ae4ezaQJA1Pj8YAR0Iom8Q&s" alt="bus logo">
+          </div>
+          <div>
+            <div class="brand">BusBooking</div>
+            <div class="muted" style="font-size:13px">Smart · Fast · Accessible</div>
+          </div>
+        </div>
+
+        <h1 id="app-title">Welcome to Bus Booking System</h1>
+        <p class="lead">Fill in passenger details, choose route & time, then press <strong>Book Now</strong> to see a booking summary.</p>
+
+        <form id="bookingForm" novalidate>
+          <fieldset style="border:0;padding:0;margin:0;margin-top:12px">
+            <legend class="muted" style="font-weight:700;margin-bottom:6px">User Details</legend>
+
+            <div class="grid">
+              <div>
+                <label for="fullname">Full name</label>
+                <input id="fullname" name="fullname" type="text" placeholder="Your name" required aria-required="true">
+                <div id="fullnameError" class="error" hidden></div>
+              </div>
+
+              <div>
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" placeholder="+91 98765 43210" pattern="^\+?\d{7,15}$" required aria-required="true">
+                <div id="phoneError" class="error" hidden></div>
+              </div>
+
+              <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="name@example.com" required aria-required="true">
+                <div id="emailError" class="error" hidden></div>
+              </div>
+
+              <div>
+                <label for="pwd">Password</label>
+                <input id="pwd" name="pwd" type="password" placeholder="Choose a password" minlength="6" required aria-required="true">
+                <div id="pwdError" class="error" hidden></div>
+              </div>
+
+              <div class="full">
+                <label for="from">From (origin)</label>
+                <select id="from" name="from" required>
+                  <option value="">-- Select origin --</option>
+                  <option>New Delhi</option>
+                  <option>Mumbai</option>
+                  <option>Kolkata</option>
+                  <option>Bengaluru</option>
+                  <option>Chennai</option>
+                </select>
+              </div>
+
+              <div class="full">
+                <label for="to">To (destination)</label>
+                <select id="to" name="to" required>
+                  <option value="">-- Select destination --</option>
+                  <option>Mumbai</option>
+                  <option>New Delhi</option>
+                  <option>Kolkata</option>
+                  <option>Hyderabad</option>
+                  <option>Kanpur</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="date">Travel date</label>
+                <input id="date" name="date" type="date" required>
+              </div>
+
+              <div>
+                <label for="time">Departure time</label>
+                <input id="time" name="time" type="time" required>
+              </div>
+
+              <div>
+                <label for="seats">Passengers</label>
+                <input id="seats" name="seats" type="number" min="1" max="10" value="1" required>
+              </div>
+
+              <div>
+                <label for="class">Seat type</label>
+                <select id="class" name="class" required>
+                  <option value="Regular">Regular</option>
+                  <option value="Sleeper">Sleeper</option>
+                  <option value="AC">AC</option>
+                </select>
+              </div>
+
+              <div class="full">
+                <label for="notes">Special requests / Notes</label>
+                <input id="notes" name="notes" type="text" placeholder="e.g. wheelchair access, vegetarian meal">
+              </div>
+
+              <div class="full" style="display:flex;justify-content:flex-start;align-items:center;gap:10px;margin-top:4px">
+                <button type="submit" class="primary" id="bookBtn">Book Now</button>
+                <button type="button" class="ghost" id="clearBtn">Clear</button>
+                <div id="formMessage" class="muted" style="margin-left:auto"></div>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+
+      </div>
+
+      <aside class="right" aria-label="Booking summary and image">
+        <img src="https://images.unsplash.com/photo-1504215680853-026ed2a45def?q=80&w=900&auto=format&fit=crop&ixlib=rb-4.0.3&s=8a5ef8b02790a0a3a888a8b4e9a6f3c6" alt="bus" width="260" height="200" style="border-radius:8px;object-fit:cover;box-shadow:0 8px 24px rgba(2,6,23,0.06)">
+
+        
+
+        <div style="margin-top:12px;text-align:center;">
+          <button class="primary" id="showHistory">Show Saved Bookings</button>
+          <div class="muted" style="font-size:12px;margin-top:8px">No external data is sent. Demo only.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- modal for summary / saved items -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2>Booking Summary</h2>
+        <button class="close" id="modalClose" aria-label="Close summary">✕</button>
+      </div>
+      <div id="modalContent">
+        <pre id="modalText">No booking selected.</pre>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button class="ghost" id="downloadBtn">Download (JSON)</button>
+        <button class="primary" id="confirmBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
