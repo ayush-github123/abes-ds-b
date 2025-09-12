@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        #product-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 40px 0;
+        }
+
+        .card {
+            border: 2px solid #222;
+            border-radius: 8px;
+            padding: 16px;
+            width: 220px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .card img {
+            width: 220px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .card h3 {
+            margin: 8px 0;
+            font-size: 1.2em;
+        }
+
+        .card p {
+            margin: 4px 0;
+            font-size: 1em;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .card button {
+            padding: 8px 12px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 3px;
+            border-width: 2px;
+        }
+
+        .add-to-cart {
+            border: 2px solid blue;
+            background: white;
+        }
+
+        .buy-now {
+            border: 2px solid red;
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="product-container">
+        <div class="card">
+            <img src="burger.jpg" alt="Burger">
+            <h3>Burger</h3>
+            <p>Delicious burger</p>
+            <p>Rs. 30</p>
+            <div class="card-buttons">
+                <button class="add-to-cart">Add to Cart</button>
+                <button class="buy-now">Buy Now</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="pizza.jpg" alt="Pizza">
+            <h3>Pizza</h3>
+            <p>Cheesy pepperoni pizza</p>
+            <p>Rs. 110</p>
+            <div class="card-buttons">
+                <button class="add-to-cart">Add to Cart</button>
+                <button class="buy-now">Buy Now</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="coke.jpeg" alt="Coke">
+            <h3>Coke</h3>
+            <p>Refreshing soft drink</p>
+            <p>Rs. 40</p>
+            <div class="card-buttons">
+                <button class="add-to-cart">Add to Cart</button>
+                <button class="buy-now">Buy Now</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
